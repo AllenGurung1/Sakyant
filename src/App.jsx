@@ -1,25 +1,26 @@
-import { useState, useEffect, useRef } from "react";
-import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
+// Google Fonts loaded via useEffect
+const FONT_LINK = "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Barlow+Condensed:wght@400;500;600;700;800;900&display=swap";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DATA
-// ─────────────────────────────────────────────────────────────────────────────
+import { useState, useEffect, useRef } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
 
 const fighters = [
-  { name: "Bikash Gurung",    weight: "Welterweight",  record: "12-3", badge: true,  initials: "BG", accent: "#8B0000" },
-  { name: "Anish Tamang",     weight: "Lightweight",   record: "8-1",  badge: true,  initials: "AT", accent: "#B8860B" },
-  { name: "Priya Rana",       weight: "Strawweight",   record: "5-2",  badge: false, initials: "PR", accent: "#556B2F" },
-  { name: "Roshan Shrestha",  weight: "Middleweight",  record: "9-4",  badge: true,  initials: "RS", accent: "#8B0000" },
-  { name: "Suman Karki",      weight: "Featherweight", record: "6-2",  badge: false, initials: "SK", accent: "#B8860B" },
-  { name: "Nisha Lama",       weight: "Flyweight",     record: "4-1",  badge: true,  initials: "NL", accent: "#8B0000" },
+  { name: "Bikash Gurung",   weight: "Welterweight",  record: "12-3", badge: true,  initials: "BG", accent: "#8B0000" },
+  { name: "Anish Tamang",    weight: "Lightweight",   record: "8-1",  badge: true,  initials: "AT", accent: "#B8860B" },
+  { name: "Priya Rana",      weight: "Strawweight",   record: "5-2",  badge: false, initials: "PR", accent: "#556B2F" },
+  { name: "Roshan Shrestha", weight: "Middleweight",  record: "9-4",  badge: true,  initials: "RS", accent: "#8B0000" },
+  { name: "Suman Karki",     weight: "Featherweight", record: "6-2",  badge: false, initials: "SK", accent: "#B8860B" },
+  { name: "Nisha Lama",      weight: "Flyweight",     record: "4-1",  badge: true,  initials: "NL", accent: "#8B0000" },
 ];
 
 const faqs = [
   { q: "What does 'Sak Yant' actually mean?", a: "Sak Yant (สักยันต์) translates to 'sacred geometric tattooing'. 'Sak' means 'to tap' or 'tattoo' while 'Yant' derives from the Sanskrit 'Yantra', a sacred geometric diagram believed to carry magical protection, power, and fortune." },
   { q: "What does the Hah Taew (5 Lines) tattoo mean?", a: "The Hah Taew is the most iconic Sak Yant design. Each of the five rows carries a specific blessing: row one prevents unjust punishment, row two protects against misfortune, row three wards off black magic, row four brings good luck, and row five grants power and attraction." },
   { q: "Why do Muay Thai fighters get Sak Yant?", a: "Thai fighters have sought Sak Yant protection for centuries. The tattoos are believed to make the skin resistant to weapons, grant invincibility in battle, and channel the energy of Buddhist scripture — a powerful psychological ritual before any bout." },
-  { q: "What is The Contender Fight Series in Pokhara?", a: "Nepal's premier Muay Thai promotion event held in Pokhara. It features local fighters from Lakeside gyms competing against national and international opponents — the primary competitive outlet for Sak Yant athletes." },
-  { q: "How is Lakeside training different from Rangasala?", a: "Rangasala (the national stadium) focuses on competitive bouts in an urban setting. Lakeside training is shaped by altitude, lake-recovery, and a tighter community bond — ideal for fighters who want deep technique work alongside Nepal's mountain energy." },
+  { q: "What is The Contender Fight Series in Pokhara?", a: "Nepal's premier Muay Thai promotion event held in Pokhara. It features local fighters from Lakeside gyms competing against national and international opponents." },
+  { q: "How is Lakeside training different from Rangasala?", a: "Rangasala focuses on competitive bouts in an urban setting. Lakeside training is shaped by altitude, lake-recovery, and a tighter community bond — ideal for fighters who want deep technique work alongside Nepal's mountain energy." },
 ];
 
 const galleryPhotos = [
@@ -35,14 +36,6 @@ const galleryPhotos = [
   { src: "https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=700&q=80", caption: "Lakeside golden hour" },
   { src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=700&q=80", caption: "Himalayan peaks" },
   { src: "https://images.unsplash.com/photo-1502904550040-7534597429ae?w=700&q=80", caption: "Pokhara valley" },
-  { src: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=700&q=80", caption: "Pre-fight meditation" },
-  { src: "https://images.unsplash.com/photo-1616279967983-ec413476e824?w=700&q=80", caption: "Kru instruction session" },
-  { src: "https://images.unsplash.com/photo-1600965962102-9d260a71890d?w=700&q=80", caption: "Ring work at dusk" },
-  { src: "https://images.unsplash.com/photo-1554284126-aa88f22d8b74?w=700&q=80", caption: "Footwork drills" },
-  { src: "https://images.unsplash.com/photo-1509781827353-fb95d4a6bd71?w=700&q=80", caption: "Team after training" },
-  { src: "https://images.unsplash.com/photo-1455156218388-5e61b526818b?w=700&q=80", caption: "Lakeside sunrise run" },
-  { src: "https://images.unsplash.com/photo-1422289333144-4759a4d93d8a?w=700&q=80", caption: "Fewa Lake reflection" },
-  { src: "https://images.unsplash.com/photo-1517130038641-a774d04afb3c?w=700&q=80", caption: "Community spar night" },
 ];
 
 const achievements = [
@@ -55,51 +48,11 @@ const achievements = [
 ];
 
 const events = [
-  {
-    date: "AUG 15, 2025", status: "upcoming", tag: "Major Event",
-    title: "Contender Fight Series III",
-    venue: "Pokhara Stadium, Lakeside",
-    desc: "Nepal's biggest Muay Thai night returns. Six Sak Yant fighters on the card. Tickets on sale now.",
-    img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&q=75",
-    details: ["6 Sak Yant fighters confirmed", "International headline bout", "Live streamed nationally", "Pre-fight Sak Yant ceremony"],
-    accent: "#D4AF37",
-  },
-  {
-    date: "JUL 4, 2025", status: "upcoming", tag: "In-Gym",
-    title: "Sak Yant Blessing Ceremony",
-    venue: "Sak Yant Lakeside Gym",
-    desc: "Annual pre-season blessing with visiting Ajarn from Thailand. Open to all registered fighters.",
-    img: "https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=600&q=75",
-    details: ["Ajarn arriving from Chiang Mai", "Limited to 30 participants", "Traditional mongkol ritual", "Sacred Yant application"],
-    accent: "#C0392B",
-  },
-  {
-    date: "JUN 21, 2025", status: "upcoming", tag: "Training Camp",
-    title: "Altitude Training Camp",
-    venue: "Sarangkot, Pokhara",
-    desc: "5-day intensive camp at 1600m. Open to intermediate and advanced fighters. Includes lakeshore runs and mountain conditioning.",
-    img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=75",
-    details: ["5 days, 4 nights", "1600m altitude sessions", "Morning runs at Sarangkot", "Tactical sparring evenings"],
-    accent: "#556B2F",
-  },
-  {
-    date: "MAY 10, 2025", status: "past", tag: "Interclub",
-    title: "Lakeside Interclub Bouts",
-    venue: "Sak Yant Lakeside Ring",
-    desc: "Monthly interclub sparring night. Fighters from 5 Pokhara gyms came together for 18 bouts.",
-    img: "https://images.unsplash.com/photo-1549476464-37392f717541?w=600&q=75",
-    details: ["18 bouts completed", "5 gyms represented", "3 Sak Yant fighters won", "Open door to public"],
-    accent: "#888",
-  },
-  {
-    date: "MAR 22, 2025", status: "past", tag: "National",
-    title: "NMSF Nepal Open 2025",
-    venue: "Tribhuvan Army Club, Kathmandu",
-    desc: "National championship. Sak Yant sent 4 fighters — 2 gold, 1 silver, 1 bronze.",
-    img: "https://images.unsplash.com/photo-1600965962102-9d260a71890d?w=600&q=75",
-    details: ["2 gold, 1 silver, 1 bronze", "4 fighters represented", "Ranked #2 gym nationally", "Bikash named MVP"],
-    accent: "#888",
-  },
+  { date: "AUG 15, 2025", status: "upcoming", tag: "Major Event", title: "Contender Fight Series III", venue: "Pokhara Stadium, Lakeside", desc: "Nepal's biggest Muay Thai night returns. Six Sak Yant fighters on the card.", img: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&q=75", details: ["6 Sak Yant fighters confirmed", "International headline bout", "Live streamed nationally", "Pre-fight Sak Yant ceremony"], accent: "#D4AF37" },
+  { date: "JUL 4, 2025", status: "upcoming", tag: "In-Gym", title: "Sak Yant Blessing Ceremony", venue: "Sak Yant Lakeside Gym", desc: "Annual pre-season blessing with visiting Ajarn from Thailand. Open to all registered fighters.", img: "https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=600&q=75", details: ["Ajarn arriving from Chiang Mai", "Limited to 30 participants", "Traditional mongkol ritual", "Sacred Yant application"], accent: "#C0392B" },
+  { date: "JUN 21, 2025", status: "upcoming", tag: "Training Camp", title: "Altitude Training Camp", venue: "Sarangkot, Pokhara", desc: "5-day intensive camp at 1600m. Open to intermediate and advanced fighters.", img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=75", details: ["5 days, 4 nights", "1600m altitude sessions", "Morning runs at Sarangkot", "Tactical sparring evenings"], accent: "#556B2F" },
+  { date: "MAY 10, 2025", status: "past", tag: "Interclub", title: "Lakeside Interclub Bouts", venue: "Sak Yant Lakeside Ring", desc: "Monthly interclub sparring night. Fighters from 5 Pokhara gyms came together for 18 bouts.", img: "https://images.unsplash.com/photo-1549476464-37392f717541?w=600&q=75", details: ["18 bouts completed", "5 gyms represented", "3 Sak Yant fighters won", "Open door to public"], accent: "#888" },
+  { date: "MAR 22, 2025", status: "past", tag: "National", title: "NMSF Nepal Open 2025", venue: "Tribhuvan Army Club, Kathmandu", desc: "National championship. Sak Yant sent 4 fighters — 2 gold, 1 silver, 1 bronze.", img: "https://images.unsplash.com/photo-1600965962102-9d260a71890d?w=600&q=75", details: ["2 gold, 1 silver, 1 bronze", "4 fighters represented", "Ranked #2 gym nationally", "Bikash named MVP"], accent: "#888" },
 ];
 
 const BG_IMGS = [
@@ -134,9 +87,83 @@ const WEIGHT_CLASSES = ["Strawweight (−47kg)","Mini flyweight (−49kg)","Flyw
 const EXPERIENCE = ["Complete Beginner","Some Gym Experience","Intermediate (1-3 yrs)","Advanced (3+ yrs)","Competitive Fighter"];
 const GOALS = ["Fitness & Weight Loss","Learn Self-Defence","Compete Locally","Compete Nationally","Professional Career"];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SHARED COMPONENTS
-// ─────────────────────────────────────────────────────────────────────────────
+// Membership plans
+const PLANS = [
+  {
+    id: "weekly",
+    name: "Weekly Pass",
+    price: 3000,
+    unit: "/ week",
+    renewal: null,
+    tag: null,
+    color: "#B8860B",
+    features: ["Full gym access 7 days", "All group classes", "Locker room access", "No commitment required"],
+  },
+  {
+    id: "monthly_first",
+    name: "Monthly — First Month",
+    price: 8000,
+    unit: "/ first month",
+    renewal: "Renewal: NPR 6,000/mo",
+    tag: "Most Popular",
+    color: "#D4AF37",
+    popular: true,
+    features: ["Full gym access 30 days", "All group classes", "Sparring sessions", "Progress tracking"],
+  },
+  {
+    id: "monthly_foreigner",
+    name: "Foreigner Monthly",
+    price: 8500,
+    unit: "/ month",
+    renewal: null,
+    tag: null,
+    color: "#C0392B",
+    features: ["International welcome pack", "Airport pick-up option", "English-speaking trainer", "Cultural ceremony access"],
+  },
+  {
+    id: "kids",
+    name: "Kids Program",
+    price: 6000,
+    unit: "/ first month",
+    renewal: "Renewal: NPR 5,000/mo",
+    tag: "Under 12",
+    color: "#556B2F",
+    features: ["Ages below 12", "Dedicated kids session 5–6 PM", "Safety-first curriculum", "Parent observation allowed"],
+  },
+  {
+    id: "group",
+    name: "Group Class Drop-in",
+    price: 1000,
+    unit: "/ session",
+    renewal: null,
+    tag: null,
+    color: "#8B0000",
+    features: ["Any single group class", "No membership needed", "All levels welcome", "Equipment provided"],
+  },
+  {
+    id: "private",
+    name: "Private Coaching",
+    price: 2000,
+    unit: "/ session",
+    renewal: "2,500/session (senior Kru)",
+    tag: null,
+    color: "#4A235A",
+    features: ["1-on-1 with certified Kru", "Tailored technique work", "Fight camp prep available", "Video analysis included"],
+    extra: "20-session pack: NPR 25,000–30,000",
+  },
+];
+
+// Class schedule
+const SCHEDULE = [
+  { time: "7:00 – 8:30 AM",   class: "Muay Thai",           level: "All Levels",          icon: "🥊", color: "#8B0000",  period: "morning" },
+  { time: "8:30 – 10:00 AM",  class: "MMA",                 level: "All Levels",          icon: "🤼", color: "#B8860B",  period: "morning" },
+  { time: "10:00 AM – 4:00 PM", class: "Private Sessions",  level: "By Appointment",      icon: "🎯", color: "#2C5F2E",  period: "midday" },
+  { time: "5:00 – 6:00 PM",   class: "Kids Muay Thai",      level: "Under 12",            icon: "👦", color: "#556B2F",  period: "evening" },
+  { time: "6:00 – 7:00 PM",   class: "Beginners (Adult)",   level: "Beginner",            icon: "🌱", color: "#1A5276",  period: "evening" },
+  { time: "7:00 – 8:30 PM",   class: "Intermediate / Pro",  level: "Intermediate+",       icon: "⚡", color: "#C0392B",  period: "evening" },
+];
+
+// ─── SHARED COMPONENTS ───────────────────────────────────────────────────────
 
 const YantSymbol = ({ size = 120, opacity = 0.7 }) => (
   <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style={{ opacity }}>
@@ -146,15 +173,204 @@ const YantSymbol = ({ size = 120, opacity = 0.7 }) => (
     <circle cx="50" cy="50" r="15" fill="none" stroke="#D4AF37" strokeWidth="1" />
     <circle cx="50" cy="50" r="7" fill="none" stroke="#C0392B" strokeWidth="0.8" />
     <circle cx="50" cy="50" r="2.5" fill="#D4AF37" />
-    {[0,45,90,135,180,225,270,315].map(a => { const r = a*Math.PI/180; return <line key={a} x1={50+7*Math.cos(r)} y1={50+7*Math.sin(r)} x2={50+14*Math.cos(r)} y2={50+14*Math.sin(r)} stroke="#D4AF37" strokeWidth="0.5" />; })}
-    {[0,60,120,180,240,300].map(a => { const r = a*Math.PI/180; return <line key={a} x1={50+15*Math.cos(r)} y1={50+15*Math.sin(r)} x2={50+40*Math.cos(r)} y2={50+40*Math.sin(r)} stroke="#D4AF37" strokeWidth="0.4" opacity="0.6" />; })}
+    {[0,45,90,135,180,225,270,315].map(a => { const r=a*Math.PI/180; return <line key={a} x1={50+7*Math.cos(r)} y1={50+7*Math.sin(r)} x2={50+14*Math.cos(r)} y2={50+14*Math.sin(r)} stroke="#D4AF37" strokeWidth="0.5"/>; })}
+    {[0,60,120,180,240,300].map(a => { const r=a*Math.PI/180; return <line key={a} x1={50+15*Math.cos(r)} y1={50+15*Math.sin(r)} x2={50+40*Math.cos(r)} y2={50+40*Math.sin(r)} stroke="#D4AF37" strokeWidth="0.4" opacity="0.6"/>; })}
   </svg>
 );
 
+// AI-generated style hero image using canvas art
+const HeroArtCanvas = () => {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const W = canvas.width, H = canvas.height;
+    // Deep dark background
+    const bg = ctx.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, "#0a0005");
+    bg.addColorStop(0.5, "#150008");
+    bg.addColorStop(1, "#0a0a00");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Mountain silhouette
+    ctx.fillStyle = "#0f0f0f";
+    ctx.beginPath();
+    ctx.moveTo(0, H);
+    ctx.lineTo(0, H*0.55);
+    ctx.lineTo(W*0.1, H*0.35);
+    ctx.lineTo(W*0.2, H*0.45);
+    ctx.lineTo(W*0.32, H*0.18);
+    ctx.lineTo(W*0.45, H*0.38);
+    ctx.lineTo(W*0.58, H*0.1);
+    ctx.lineTo(W*0.7, H*0.32);
+    ctx.lineTo(W*0.82, H*0.42);
+    ctx.lineTo(W*0.9, H*0.28);
+    ctx.lineTo(W, H*0.5);
+    ctx.lineTo(W, H);
+    ctx.closePath();
+    ctx.fill();
+
+    // Golden glow at center-top
+    const glow = ctx.createRadialGradient(W/2, H*0.3, 10, W/2, H*0.3, W*0.4);
+    glow.addColorStop(0, "rgba(212,175,55,0.35)");
+    glow.addColorStop(0.4, "rgba(192,57,43,0.15)");
+    glow.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+
+    // Draw Yant hexagon geometry
+    const cx = W/2, cy = H*0.3;
+    const R = 90;
+    ctx.strokeStyle = "rgba(212,175,55,0.7)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const angle = (Math.PI/3)*i - Math.PI/6;
+      const x = cx + R*Math.cos(angle), y = cy + R*Math.sin(angle);
+      i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.stroke();
+
+    // Inner star
+    ctx.strokeStyle = "rgba(192,57,43,0.8)";
+    ctx.lineWidth = 1;
+    const pts6 = Array.from({length:6}, (_,i) => {
+      const a = (Math.PI/3)*i - Math.PI/6;
+      return [cx+R*0.55*Math.cos(a), cy+R*0.55*Math.sin(a)];
+    });
+    ctx.beginPath();
+    [0,2,4,0].forEach(i => { const [x,y]=pts6[i]; ctx.lineTo(x,y); });
+    ctx.stroke();
+    ctx.beginPath();
+    [1,3,5,1].forEach(i => { const [x,y]=pts6[i]; ctx.lineTo(x,y); });
+    ctx.stroke();
+
+    // Decorative circles
+    [R*1.1, R*0.7, R*0.35].forEach((r,i) => {
+      ctx.strokeStyle = i===0 ? "rgba(212,175,55,0.25)" : "rgba(212,175,55,0.4)";
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI*2);
+      ctx.stroke();
+    });
+
+    // Radiating lines from center
+    for (let i=0; i<24; i++) {
+      const a = (Math.PI*2/24)*i;
+      const r1=R*0.35, r2=R*0.95;
+      ctx.strokeStyle = "rgba(212,175,55,0.15)";
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(cx+r1*Math.cos(a), cy+r1*Math.sin(a));
+      ctx.lineTo(cx+r2*Math.cos(a), cy+r2*Math.sin(a));
+      ctx.stroke();
+    }
+
+    // Fighter silhouette (stylized kick pose)
+    const fx = W*0.5, fy = H*0.6;
+    const scale = 1.8;
+    ctx.fillStyle = "rgba(20,0,0,0.95)";
+    ctx.strokeStyle = "rgba(192,57,43,0.9)";
+    ctx.lineWidth = 1.2;
+    // Head
+    ctx.beginPath();
+    ctx.arc(fx, fy - 62*scale, 10*scale, 0, Math.PI*2);
+    ctx.fill();
+    ctx.stroke();
+    // Body
+    ctx.beginPath();
+    ctx.moveTo(fx, fy - 52*scale);
+    ctx.lineTo(fx - 4*scale, fy - 20*scale);
+    ctx.lineTo(fx + 14*scale, fy - 20*scale);
+    ctx.lineTo(fx + 8*scale, fy - 52*scale);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    // Left arm raised (guard)
+    ctx.beginPath();
+    ctx.moveTo(fx - 4*scale, fy - 45*scale);
+    ctx.lineTo(fx - 14*scale, fy - 58*scale);
+    ctx.lineTo(fx - 10*scale, fy - 62*scale);
+    ctx.lineWidth = 5*scale;
+    ctx.strokeStyle = "rgba(192,57,43,0.85)";
+    ctx.stroke();
+    // Right arm — high kick punch
+    ctx.beginPath();
+    ctx.moveTo(fx + 8*scale, fy - 45*scale);
+    ctx.lineTo(fx + 22*scale, fy - 55*scale);
+    ctx.lineWidth = 5*scale;
+    ctx.stroke();
+    // Back leg
+    ctx.beginPath();
+    ctx.moveTo(fx - 2*scale, fy - 20*scale);
+    ctx.lineTo(fx - 8*scale, fy);
+    ctx.lineTo(fx - 5*scale, fy + 15*scale);
+    ctx.lineWidth = 6*scale;
+    ctx.strokeStyle = "rgba(139,0,0,0.9)";
+    ctx.stroke();
+    // Front leg — kick
+    ctx.beginPath();
+    ctx.moveTo(fx + 4*scale, fy - 20*scale);
+    ctx.lineTo(fx + 18*scale, fy - 5*scale);
+    ctx.lineTo(fx + 28*scale, fy - 20*scale);
+    ctx.lineWidth = 6*scale;
+    ctx.stroke();
+
+    // Sacred script lines (simulated Thai sacred text)
+    ctx.fillStyle = "rgba(212,175,55,0.35)";
+    ctx.font = `${8}px serif`;
+    const sacredY = [H*0.82, H*0.85, H*0.88, H*0.91, H*0.94];
+    const sacredTexts = ["᪑᪒᪓᪔᪕᪖᪗᪘᪙","ᬒᬃᬄᬅᬆᬇᬈ","ᨀᨁᨂᨃᨄᨅᨆ","᭐᭑᭒᭓᭔᭕᭖","ᬓᬔᬕᬖᬗᬘᬙ"];
+    sacredTexts.forEach((t, i) => {
+      ctx.fillText(t.repeat(Math.floor(W/40)), W*0.05, sacredY[i]);
+    });
+
+    // Top text: SAK YANT
+    ctx.fillStyle = "rgba(212,175,55,0.9)";
+    ctx.font = `bold ${20}px "Bebas Neue", Georgia, serif`;
+    ctx.textAlign = "center";
+    ctx.letterSpacing = "0.3em";
+    ctx.fillText("SAK YANT", W/2, H*0.07);
+    ctx.fillStyle = "rgba(255,255,255,0.5)";
+    ctx.font = `${11}px "Barlow Condensed", Georgia, serif`;
+    ctx.fillText("LAKESIDE · MUAY THAI · POKHARA", W/2, H*0.12);
+
+    // Fewa Lake reflection at bottom
+    const lake = ctx.createLinearGradient(0, H*0.72, 0, H);
+    lake.addColorStop(0, "rgba(0,20,40,0)");
+    lake.addColorStop(0.3, "rgba(0,10,25,0.6)");
+    lake.addColorStop(1, "rgba(0,5,15,0.85)");
+    ctx.fillStyle = lake;
+    ctx.fillRect(0, H*0.72, W, H*0.28);
+
+    // Reflection ripples
+    for (let i=0; i<6; i++) {
+      const ry = H*0.78 + i*12;
+      ctx.strokeStyle = `rgba(212,175,55,${0.05 + i*0.03})`;
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.ellipse(W/2, ry, W*0.3 + i*15, 3, 0, 0, Math.PI*2);
+      ctx.stroke();
+    }
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={700}
+      height={420}
+      style={{ width: "100%", maxWidth: 700, borderRadius: 16, border: "1px solid rgba(212,175,55,0.25)", display: "block", margin: "0 auto" }}
+    />
+  );
+};
+
 const SectionHeader = ({ label, title, subtitle }) => (
   <div className="text-center mb-12">
-    <span className="inline-block text-xs font-bold tracking-widest text-red-500 uppercase mb-3 px-4 py-1 border border-red-900/50 rounded-full">{label}</span>
-    <h2 className="text-4xl md:text-5xl font-black text-white mb-4" style={{ fontFamily: "'Georgia', serif" }}>{title}</h2>
+    <span className="inline-block text-red-500 uppercase mb-3 px-4 py-1 border border-red-900/50 rounded-full" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "0.75rem", letterSpacing: "0.25em", fontWeight: 700 }}>{label}</span>
+    <h2 className="text-4xl md:text-5xl font-black text-white mb-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, letterSpacing: "0.02em" }}>{title}</h2>
     {subtitle && <p className="text-slate-400 max-w-xl mx-auto text-base">{subtitle}</p>}
   </div>
 );
@@ -174,32 +390,29 @@ const BackgroundMosaic = () => (
   </div>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// NAVBAR
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── NAVBAR ───────────────────────────────────────────────────────────────────
 
 const NAV_LINKS = [
-  { path: "#home",         label: "Home" },
-  { path: "#gym",          label: "The Gym" },
-  { path: "#gallery",      label: "Gallery" },
-  { path: "#achievements", label: "Achievements" },
-  { path: "#events",       label: "Events" },
-  { path: "#culture",      label: "Culture" },
-  { path: "#roster",       label: "Roster" },
-  { path: "#register",     label: "Join" },
+  { path: "#home",        label: "Home" },
+  { path: "#gym",         label: "The Gym" },
+  { path: "#gallery",     label: "Gallery" },
+  { path: "#achievements",label: "Honours" },
+  { path: "#events",      label: "Events" },
+  { path: "#membership",  label: "Membership" },
+  { path: "#culture",     label: "Culture" },
+  { path: "#roster",      label: "Roster" },
+  { path: "#location",    label: "Location" },
+  { path: "#register",    label: "Join" },
 ];
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [active, setActive] = useState("#home");
-  const location = useLocation();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 40);
-      // highlight active link based on scroll position
       const offsets = NAV_LINKS.map(l => {
         const el = document.querySelector(l.path);
         return el ? { path: l.path, top: el.getBoundingClientRect().top } : null;
@@ -218,68 +431,52 @@ const Navbar = () => {
   };
 
   return (
-    <>
-      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-        style={{ background: scrolled ? "rgba(8,8,8,0.97)" : "transparent", borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none", backdropFilter: scrolled ? "blur(12px)" : "none" }}>
-        <div className="max-w-7xl mx-auto p-12 flex items-center justify-between h-24">
-          {/* Logo */}
-          <button onClick={() => scrollTo("#home")} className="flex items-center gap-2.5 group">
-            <YantSymbol size={44} opacity={0.9} />
-            <div className="text-left">
-              <div className="text-amber-400 font-black text-lg tracking-widest leading-none">SAK YANT</div>
-              <div className="text-slate-500 text-lg tracking-widest leading-none">LAKESIDE · MT</div>
-            </div>
-          </button>
-
-          {/* Desktop links */}
-          <div className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map(l => (
-              <button key={l.path} onClick={() => scrollTo(l.path)}
-                className="px-3 py-1.5 text-xs font-bold uppercase tracking-widest rounded transition-all duration-200"
-                style={{
-                  color: active === l.path ? "#D4AF37" : "#777",
-                  background: active === l.path ? "rgba(212,175,55,0.08)" : "transparent",
-                  fontFamily: "Georgia, serif",
-                }}>
-                {l.label}
-              </button>
-            ))}
-            <button onClick={() => scrollTo("#register")}
-              className="ml-3 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all hover:scale-105"
-              style={{ background: "linear-gradient(135deg,#8B0000,#C0392B)", color: "#fff", letterSpacing: "0.12em" }}>
-              Join Now
-            </button>
+    <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      style={{ background: scrolled ? "rgba(8,8,8,0.97)" : "transparent", borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none", backdropFilter: scrolled ? "blur(14px)" : "none" }}>
+      <div className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between h-24">
+        <button onClick={() => scrollTo("#home")} className="flex items-center gap-2.5 group">
+          <YantSymbol size={50} opacity={0.9} />
+          <div className="text-left">
+            <div className="text-amber-400 font-black text-base leading-none" style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "1.1rem", letterSpacing: "0.12em" }}>SAK YANT</div>
+            <div className="text-slate-500 leading-none" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "1.1rem", letterSpacing: "0.22em" }}>LAKESIDE · MT</div>
           </div>
-
-          {/* Mobile hamburger */}
-          <button className="lg:hidden flex flex-col gap-1.5 p-2" onClick={() => setMenuOpen(!menuOpen)}>
-            <span className="w-6 h-0.5 bg-amber-400 transition-all" style={{ transform: menuOpen ? "rotate(45deg) translate(3px,3px)" : "" }} />
-            <span className="w-6 h-0.5 bg-amber-400 transition-all" style={{ opacity: menuOpen ? 0 : 1 }} />
-            <span className="w-6 h-0.5 bg-amber-400 transition-all" style={{ transform: menuOpen ? "rotate(-45deg) translate(3px,-3px)" : "" }} />
+        </button>
+        <div className="hidden xl:flex items-center gap-0.5 ">
+          {NAV_LINKS.map(l => (
+            <button key={l.path} onClick={() => scrollTo(l.path)}
+              className="px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded transition-all duration-200"
+              style={{ color: active === l.path ? "#D4AF37" : "#666", background: active === l.path ? "rgba(212,175,55,0.08)" : "transparent", fontFamily: "'Barlow Condensed', sans-serif" }}>
+              {l.label}
+            </button>
+          ))}
+          <button onClick={() => scrollTo("#register")}
+            className="ml-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all hover:scale-105"
+            style={{ background: "linear-gradient(135deg,#8B0000,#C0392B)", color: "#fff" }}>
+            Join Now
           </button>
         </div>
-
-        {/* Mobile menu */}
-        {menuOpen && (
-          <div className="lg:hidden border-t border-slate-800 py-4 px-6 flex flex-col gap-1"
-            style={{ background: "rgba(8,8,8,0.98)" }}>
-            {NAV_LINKS.map(l => (
-              <button key={l.path} onClick={() => scrollTo(l.path)}
-                className="text-left px-3 py-3 text-sm font-bold uppercase tracking-widest rounded transition-colors"
-                style={{ color: active === l.path ? "#D4AF37" : "#888" }}>
-                {l.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </nav>
-    </>
+        <button className="xl:hidden flex flex-col gap-1.5 p-2" onClick={() => setMenuOpen(!menuOpen)}>
+          <span className="w-6 h-0.5 bg-amber-400 transition-all" style={{ transform: menuOpen ? "rotate(45deg) translate(3px,3px)" : "" }} />
+          <span className="w-6 h-0.5 bg-amber-400 transition-all" style={{ opacity: menuOpen ? 0 : 1 }} />
+          <span className="w-6 h-0.5 bg-amber-400 transition-all" style={{ transform: menuOpen ? "rotate(-45deg) translate(3px,-3px)" : "" }} />
+        </button>
+      </div>
+      {menuOpen && (
+        <div className="xl:hidden border-t border-slate-800 py-4 px-6 flex flex-col gap-1" style={{ background: "rgba(8,8,8,0.98)" }}>
+          {NAV_LINKS.map(l => (
+            <button key={l.path} onClick={() => scrollTo(l.path)}
+              className="text-left px-3 py-3 text-sm font-bold uppercase tracking-widest rounded transition-colors"
+              style={{ color: active === l.path ? "#D4AF37" : "#888" }}>
+              {l.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </nav>
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ACCORDION
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── ACCORDION ───────────────────────────────────────────────────────────────
 
 const AccordionItem = ({ faq }) => {
   const [open, setOpen] = useState(false);
@@ -287,7 +484,7 @@ const AccordionItem = ({ faq }) => {
     <div className="border border-red-900/40 rounded-lg overflow-hidden mb-3 transition-all"
       style={{ background: open ? "rgba(139,0,0,0.1)" : "rgba(255,255,255,0.03)" }}>
       <button className="w-full flex items-center justify-between p-5 text-left" onClick={() => setOpen(!open)}>
-        <span className="font-semibold text-amber-400 pr-4">{faq.q}</span>
+        <span className="text-amber-400 pr-4" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.05rem", fontWeight: 600 }}>{faq.q}</span>
         <span className="text-amber-500 text-2xl flex-shrink-0 transition-transform duration-300"
           style={{ transform: open ? "rotate(45deg)" : "rotate(0deg)" }}>+</span>
       </button>
@@ -301,9 +498,7 @@ const AccordionItem = ({ faq }) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// FIGHTER CARD
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── FIGHTER CARD ────────────────────────────────────────────────────────────
 
 const FighterCard = ({ fighter }) => (
   <div className="relative border border-slate-700/50 rounded-xl overflow-hidden hover:border-red-700/60 transition-all duration-300 group"
@@ -320,36 +515,29 @@ const FighterCard = ({ fighter }) => (
         style={{ background: `${fighter.accent}33`, borderColor: fighter.accent, color: "#D4AF37" }}>
         {fighter.initials}
       </div>
-      <h3 className="text-white font-bold mb-1">{fighter.name}</h3>
+      <h3 className="text-white mb-1" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.05rem", fontWeight: 700 }}>{fighter.name}</h3>
       <p className="text-slate-400 text-sm mb-3">{fighter.weight}</p>
-      <span className="text-2xl font-black text-amber-400">{fighter.record}</span>
+      <span className="text-amber-400" style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "1.7rem", letterSpacing: "0.05em" }}>{fighter.record}</span>
       <span className="text-slate-500 text-xs ml-2">W-L</span>
     </div>
   </div>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GALLERY
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── GALLERY ─────────────────────────────────────────────────────────────────
 
 const Gallery = () => {
   const [active, setActive] = useState(null);
   const [idx, setIdx] = useState(0);
-
   const open = (i) => { setIdx(i); setActive(galleryPhotos[i]); };
-  const prev = (e) => { e.stopPropagation(); const ni = (idx - 1 + galleryPhotos.length) % galleryPhotos.length; setIdx(ni); setActive(galleryPhotos[ni]); };
-  const next = (e) => { e.stopPropagation(); const ni = (idx + 1) % galleryPhotos.length; setIdx(ni); setActive(galleryPhotos[ni]); };
-
+  const prev = (e) => { e.stopPropagation(); const ni=(idx-1+galleryPhotos.length)%galleryPhotos.length; setIdx(ni); setActive(galleryPhotos[ni]); };
+  const next = (e) => { e.stopPropagation(); const ni=(idx+1)%galleryPhotos.length; setIdx(ni); setActive(galleryPhotos[ni]); };
   return (
     <>
       <div className="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3">
         {galleryPhotos.map((photo, i) => (
-          <div key={i} className="break-inside-avoid cursor-pointer overflow-hidden rounded-lg border border-slate-800 hover:border-amber-700/50 transition-all duration-300 group"
-            onClick={() => open(i)}>
+          <div key={i} className="break-inside-avoid cursor-pointer overflow-hidden rounded-lg border border-slate-800 hover:border-amber-700/50 transition-all duration-300 group" onClick={() => open(i)}>
             <div className="relative overflow-hidden">
-              <img src={photo.src} alt={photo.caption} loading="lazy"
-                className="w-full object-cover group-hover:scale-105 transition-transform duration-500"
-                style={{ filter: "brightness(0.85) saturate(0.8)" }} />
+              <img src={photo.src} alt={photo.caption} loading="lazy" className="w-full object-cover group-hover:scale-105 transition-transform duration-500" style={{ filter: "brightness(0.85) saturate(0.8)" }} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
                 <span className="text-xs text-white font-semibold">{photo.caption}</span>
               </div>
@@ -357,62 +545,47 @@ const Gallery = () => {
           </div>
         ))}
       </div>
-
       {active && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/92" onClick={() => setActive(null)}>
           <button className="absolute top-5 right-6 text-white text-3xl hover:text-amber-400 transition-colors z-10" onClick={() => setActive(null)}>✕</button>
-          <button className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-slate-700 flex items-center justify-center text-white hover:border-amber-500 hover:text-amber-400 transition-all z-10 text-xl"
-            style={{ background: "rgba(0,0,0,0.7)" }} onClick={prev}>‹</button>
+          <button className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-slate-700 flex items-center justify-center text-white hover:border-amber-500 hover:text-amber-400 transition-all z-10 text-xl" style={{ background: "rgba(0,0,0,0.7)" }} onClick={prev}>‹</button>
           <div className="max-w-4xl w-full mx-16" onClick={e => e.stopPropagation()}>
             <img src={active.src} alt={active.caption} className="w-full rounded-xl object-cover max-h-[78vh]" />
             <div className="flex items-center justify-between mt-3 px-1">
               <p className="text-amber-400 font-semibold text-sm">{active.caption}</p>
-              <p className="text-slate-600 text-xs">{idx + 1} / {galleryPhotos.length}</p>
+              <p className="text-slate-600 text-xs">{idx+1} / {galleryPhotos.length}</p>
             </div>
           </div>
-          <button className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-slate-700 flex items-center justify-center text-white hover:border-amber-500 hover:text-amber-400 transition-all z-10 text-xl"
-            style={{ background: "rgba(0,0,0,0.7)" }} onClick={next}>›</button>
+          <button className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-slate-700 flex items-center justify-center text-white hover:border-amber-500 hover:text-amber-400 transition-all z-10 text-xl" style={{ background: "rgba(0,0,0,0.7)" }} onClick={next}>›</button>
         </div>
       )}
     </>
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ACHIEVEMENTS
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── ACHIEVEMENTS ────────────────────────────────────────────────────────────
 
 const Achievements = () => (
   <div className="relative">
-    {/* Vertical timeline line */}
     <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-amber-700/60 via-red-900/40 to-transparent" style={{ transform: "translateX(-0.5px)" }} />
     <div className="space-y-12">
       {achievements.map((a, i) => (
-        <div key={i} className={`relative flex flex-col md:flex-row gap-6 items-start ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}>
-          {/* Timeline dot */}
-          <div className="absolute left-6 md:left-1/2 w-3 h-3 rounded-full border-2 border-amber-500 z-10"
-            style={{ background: "#8B0000", transform: "translate(-50%, 18px)" }} />
-
-          {/* Card — alternates sides on desktop */}
-          <div className={`ml-14 md:ml-0 md:w-[calc(50%-2rem)] rounded-2xl overflow-hidden border border-slate-800 hover:border-amber-700/40 transition-all duration-300 group ${i % 2 === 0 ? "md:mr-8" : "md:ml-8"}`}
-            style={{ background: "rgba(12,12,12,0.9)" }}>
+        <div key={i} className={`relative flex flex-col md:flex-row gap-6 items-start ${i%2===0?"md:flex-row":"md:flex-row-reverse"}`}>
+          <div className="absolute left-6 md:left-1/2 w-3 h-3 rounded-full border-2 border-amber-500 z-10" style={{ background: "#8B0000", transform: "translate(-50%, 18px)" }} />
+          <div className={`ml-14 md:ml-0 md:w-[calc(50%-2rem)] rounded-2xl overflow-hidden border border-slate-800 hover:border-amber-700/40 transition-all duration-300 group ${i%2===0?"md:mr-8":"md:ml-8"}`} style={{ background: "rgba(12,12,12,0.9)" }}>
             <div className="relative h-40 overflow-hidden">
-              <img src={a.img} alt={a.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                style={{ filter: "brightness(0.55) saturate(0.7)" }} />
+              <img src={a.img} alt={a.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" style={{ filter: "brightness(0.55) saturate(0.7)" }} />
               <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(0,0,0,0.6), transparent)" }} />
               <div className="absolute bottom-4 left-4">
-                <span className="text-xs font-black px-2 py-1 rounded text-amber-900 mr-2"
-                  style={{ background: "linear-gradient(135deg,#D4AF37,#F5D060)" }}>{a.year}</span>
+                <span className="text-xs font-black px-2 py-1 rounded text-amber-900 mr-2" style={{ background: "linear-gradient(135deg,#D4AF37,#F5D060)" }}>{a.year}</span>
                 <span className="text-lg">{a.result}</span>
               </div>
             </div>
             <div className="p-5">
-              <h3 className="text-white font-black text-base mb-2">{a.title}</h3>
+              <h3 className="text-white mb-2" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.05rem", fontWeight: 700 }}>{a.title}</h3>
               <p className="text-slate-400 text-sm leading-relaxed">{a.desc}</p>
             </div>
           </div>
-
-          {/* Spacer for alternating layout */}
           <div className="hidden md:block md:w-[calc(50%-2rem)]" />
         </div>
       ))}
@@ -420,82 +593,58 @@ const Achievements = () => (
   </div>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// EVENTS
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── EVENTS ──────────────────────────────────────────────────────────────────
 
 const Events = () => {
   const [filter, setFilter] = useState("all");
-  const visible = events.filter(e => filter === "all" || e.status === filter);
-
+  const visible = events.filter(e => filter==="all" || e.status===filter);
   return (
     <div>
-      {/* Filter tabs */}
       <div className="flex justify-center gap-3 mb-10">
-        {["all", "upcoming", "past"].map(f => (
+        {["all","upcoming","past"].map(f => (
           <button key={f} onClick={() => setFilter(f)}
             className="px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all duration-200"
-            style={{
-              background: filter === f ? "linear-gradient(135deg,#8B0000,#C0392B)" : "rgba(255,255,255,0.04)",
-              color: filter === f ? "#fff" : "#666",
-              border: filter === f ? "none" : "1px solid rgba(255,255,255,0.08)",
-            }}>
-            {f === "all" ? "All Events" : f === "upcoming" ? "Upcoming" : "Past"}
+            style={{ background: filter===f ? "linear-gradient(135deg,#8B0000,#C0392B)" : "rgba(255,255,255,0.04)", color: filter===f ? "#fff" : "#666", border: filter===f ? "none" : "1px solid rgba(255,255,255,0.08)" }}>
+            {f==="all"?"All Events":f==="upcoming"?"Upcoming":"Past"}
           </button>
         ))}
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {visible.map((ev, i) => (
           <div key={i} className="rounded-2xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 group"
-            style={{ borderColor: ev.status === "upcoming" ? `${ev.accent}55` : "rgba(255,255,255,0.07)", background: "rgba(12,12,12,0.9)" }}>
-
-            {/* Event image */}
+            style={{ borderColor: ev.status==="upcoming"?`${ev.accent}55`:"rgba(255,255,255,0.07)", background: "rgba(12,12,12,0.9)" }}>
             <div className="relative h-44 overflow-hidden">
               <img src={ev.img} alt={ev.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                style={{ filter: ev.status === "past" ? "grayscale(60%) brightness(0.5)" : "brightness(0.6) saturate(0.85)" }} />
+                style={{ filter: ev.status==="past"?"grayscale(60%) brightness(0.5)":"brightness(0.6) saturate(0.85)" }} />
               <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent 60%)" }} />
-              {/* Status badge */}
               <div className="absolute top-3 left-3">
                 <span className="text-xs font-black px-2.5 py-1 rounded-full uppercase tracking-wider"
-                  style={{
-                    background: ev.status === "upcoming" ? "rgba(212,175,55,0.9)" : "rgba(80,80,80,0.85)",
-                    color: ev.status === "upcoming" ? "#1a0a00" : "#ccc",
-                  }}>
-                  {ev.status === "upcoming" ? "⚡ Upcoming" : "✓ Past"}
+                  style={{ background: ev.status==="upcoming"?"rgba(212,175,55,0.9)":"rgba(80,80,80,0.85)", color: ev.status==="upcoming"?"#1a0a00":"#ccc" }}>
+                  {ev.status==="upcoming"?"⚡ Upcoming":"✓ Past"}
                 </span>
               </div>
               <div className="absolute top-3 right-3">
-                <span className="text-xs font-bold px-2 py-1 rounded border text-slate-300"
-                  style={{ borderColor: "rgba(255,255,255,0.2)", background: "rgba(0,0,0,0.5)" }}>{ev.tag}</span>
+                <span className="text-xs font-bold px-2 py-1 rounded border text-slate-300" style={{ borderColor: "rgba(255,255,255,0.2)", background: "rgba(0,0,0,0.5)" }}>{ev.tag}</span>
               </div>
-              {/* Date overlay */}
               <div className="absolute bottom-3 left-4">
-                <span className="text-xs font-black tracking-widest" style={{ color: ev.status === "upcoming" ? ev.accent : "#888" }}>{ev.date}</span>
+                <span className="text-xs font-black tracking-widest" style={{ color: ev.status==="upcoming"?ev.accent:"#888" }}>{ev.date}</span>
               </div>
             </div>
-
             <div className="p-5">
-              <h3 className="text-white font-black text-lg mb-1 leading-tight">{ev.title}</h3>
-              <p className="text-slate-500 text-xs mb-3 flex items-center gap-1">
-                <span>📍</span>{ev.venue}
-              </p>
+              <h3 className="text-white mb-1 leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.25rem", fontWeight: 700 }}>{ev.title}</h3>
+              <p className="text-slate-500 text-xs mb-3 flex items-center gap-1"><span>📍</span>{ev.venue}</p>
               <p className="text-slate-400 text-sm leading-relaxed mb-4">{ev.desc}</p>
-
-              {/* Details list */}
               <div className="space-y-1.5 mb-4">
                 {ev.details.map((d, j) => (
                   <div key={j} className="flex items-center gap-2 text-xs text-slate-500">
-                    <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: ev.status === "upcoming" ? ev.accent : "#555" }} />
-                    {d}
+                    <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: ev.status==="upcoming"?ev.accent:"#555" }} />{d}
                   </div>
                 ))}
               </div>
-
-              {ev.status === "upcoming" && (
+              {ev.status==="upcoming" && (
                 <button className="w-full py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.02]"
-                  style={{ background: `linear-gradient(135deg, ${ev.accent}, ${ev.accent}aa)`, color: ev.accent === "#556B2F" ? "#d4f0a0" : "#fff" }}>
-                  {ev.accent === "#D4AF37" ? "Get Tickets ↗" : "Register Now ↗"}
+                  style={{ background: `linear-gradient(135deg, ${ev.accent}, ${ev.accent}aa)`, color: ev.accent==="#556B2F"?"#d4f0a0":"#fff" }}>
+                  {ev.accent==="#D4AF37"?"Get Tickets ↗":"Register Now ↗"}
                 </button>
               )}
             </div>
@@ -506,9 +655,226 @@ const Events = () => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MEMBER FORM
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── MEMBERSHIP PLANS ────────────────────────────────────────────────────────
+
+const MembershipSection = () => {
+  const [selected, setSelected] = useState(null);
+
+  return (
+    <div>
+      {/* Pricing grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-16">
+        {PLANS.map((plan) => (
+          <div key={plan.id}
+            className="rounded-2xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
+            style={{
+              borderColor: selected===plan.id ? plan.color : plan.popular ? `${plan.color}88` : "rgba(255,255,255,0.08)",
+              background: selected===plan.id ? `${plan.color}18` : "rgba(12,12,12,0.9)",
+              boxShadow: selected===plan.id ? `0 0 30px ${plan.color}30` : "none",
+            }}
+            onClick={() => setSelected(selected===plan.id?null:plan.id)}>
+            <div className="h-1 w-full" style={{ background: `linear-gradient(90deg,${plan.color},#D4AF37)` }} />
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  {plan.tag && (
+                    <span className="inline-block text-xs font-black px-2.5 py-1 rounded-full mb-2 tracking-wider"
+                      style={{ background: `${plan.color}33`, color: plan.color, border: `1px solid ${plan.color}55` }}>
+                      {plan.tag}
+                    </span>
+                  )}
+                  <h3 className="text-white leading-tight" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.15rem", fontWeight: 700 }}>{plan.name}</h3>
+                </div>
+              </div>
+              <div className="mb-4">
+                <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "2.2rem", letterSpacing: "0.03em", color: plan.color }}>
+                  NPR {plan.price.toLocaleString()}
+                </span>
+                <span className="text-slate-500 text-sm ml-1">{plan.unit}</span>
+                {plan.renewal && (
+                  <div className="mt-1 text-xs text-slate-500">{plan.renewal}</div>
+                )}
+                {plan.extra && (
+                  <div className="mt-2 text-xs font-bold px-3 py-1.5 rounded-lg inline-block"
+                    style={{ background: `${plan.color}20`, color: plan.color, border: `1px solid ${plan.color}40` }}>
+                    📦 {plan.extra}
+                  </div>
+                )}
+              </div>
+              <div className="space-y-2">
+                {plan.features.map((f, i) => (
+                  <div key={i} className="flex items-center gap-2 text-sm text-slate-400">
+                    <span style={{ color: plan.color }}>✓</span> {f}
+                  </div>
+                ))}
+              </div>
+              <button className="mt-5 w-full py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.02]"
+                style={{ background: selected===plan.id ? `linear-gradient(135deg,${plan.color},${plan.color}cc)` : "rgba(255,255,255,0.05)", color: selected===plan.id ? "#fff" : plan.color, border: `1px solid ${plan.color}55` }}>
+                {selected===plan.id ? "Selected ✓" : "Select Plan"}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Class Schedule */}
+      <div>
+        <div className="text-center mb-8">
+          <span className="inline-block text-amber-500 uppercase mb-3 px-4 py-1 border border-amber-900/50 rounded-full" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "0.75rem", letterSpacing: "0.25em", fontWeight: 700 }}>Daily Schedule</span>
+          <h3 className="text-3xl font-black text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>Class Timetable</h3>
+          <p className="text-slate-400 mt-2 text-sm">Monday – Saturday · All classes include warm-up & cool-down</p>
+        </div>
+
+        <div className="max-w-3xl mx-auto space-y-3">
+          {/* Morning block */}
+          <div className="text-xs font-black uppercase tracking-widest text-amber-600 mb-2 flex items-center gap-3">
+            <div className="h-px flex-1 bg-amber-900/30" />🌅 Morning Sessions<div className="h-px flex-1 bg-amber-900/30" />
+          </div>
+          {SCHEDULE.filter(s => s.period==="morning").map((s, i) => (
+            <div key={i} className="flex items-center gap-4 p-4 rounded-xl border border-slate-800 hover:border-slate-700 transition-all group"
+              style={{ background: "rgba(15,15,15,0.9)" }}>
+              <div className="text-2xl w-10 text-center flex-shrink-0">{s.icon}</div>
+              <div className="w-36 flex-shrink-0">
+                <div className="text-xs font-black text-amber-400 tracking-wide">{s.time}</div>
+              </div>
+              <div className="flex-1">
+                <div className="text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1rem", fontWeight: 600 }}>{s.class}</div>
+              </div>
+              <span className="text-xs px-2.5 py-1 rounded-full font-bold"
+                style={{ background: `${s.color}22`, color: s.color, border: `1px solid ${s.color}44` }}>
+                {s.level}
+              </span>
+            </div>
+          ))}
+
+          {/* Midday block */}
+          <div className="text-xs font-black uppercase tracking-widest text-slate-600 my-4 flex items-center gap-3">
+            <div className="h-px flex-1 bg-slate-800" />☀️ Midday<div className="h-px flex-1 bg-slate-800" />
+          </div>
+          {SCHEDULE.filter(s => s.period==="midday").map((s, i) => (
+            <div key={i} className="flex items-center gap-4 p-4 rounded-xl border border-slate-800 hover:border-slate-700 transition-all group"
+              style={{ background: "rgba(15,15,15,0.9)" }}>
+              <div className="text-2xl w-10 text-center flex-shrink-0">{s.icon}</div>
+              <div className="w-36 flex-shrink-0">
+                <div className="text-xs font-black text-amber-400 tracking-wide">{s.time}</div>
+              </div>
+              <div className="flex-1">
+                <div className="text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1rem", fontWeight: 600 }}>{s.class}</div>
+              </div>
+              <span className="text-xs px-2.5 py-1 rounded-full font-bold"
+                style={{ background: `${s.color}22`, color: s.color, border: `1px solid ${s.color}44` }}>
+                {s.level}
+              </span>
+            </div>
+          ))}
+
+          {/* Evening block */}
+          <div className="text-xs font-black uppercase tracking-widest text-red-700 my-4 flex items-center gap-3">
+            <div className="h-px flex-1 bg-red-900/30" />🌙 Evening Sessions<div className="h-px flex-1 bg-red-900/30" />
+          </div>
+          {SCHEDULE.filter(s => s.period==="evening").map((s, i) => (
+            <div key={i} className="flex items-center gap-4 p-4 rounded-xl border border-slate-800 hover:border-slate-700 transition-all group"
+              style={{ background: "rgba(15,15,15,0.9)" }}>
+              <div className="text-2xl w-10 text-center flex-shrink-0">{s.icon}</div>
+              <div className="w-36 flex-shrink-0">
+                <div className="text-xs font-black text-amber-400 tracking-wide">{s.time}</div>
+              </div>
+              <div className="flex-1">
+                <div className="text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1rem", fontWeight: 600 }}>{s.class}</div>
+              </div>
+              <span className="text-xs px-2.5 py-1 rounded-full font-bold"
+                style={{ background: `${s.color}22`, color: s.color, border: `1px solid ${s.color}44` }}>
+                {s.level}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Note */}
+        <p className="text-center text-slate-600 text-xs mt-6">Sunday: Rest day · Public holidays may vary · Private sessions available any day by booking</p>
+      </div>
+    </div>
+  );
+};
+
+// ─── LOCATION MAP ─────────────────────────────────────────────────────────────
+
+const LocationSection = () => {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+      {/* Map embed */}
+      <div className="rounded-2xl overflow-hidden border border-slate-800" style={{ height: 420 }}>
+        <iframe
+          title="Sak Yant Lakeside Gym Location"
+          width="100%"
+          height="100%"
+          style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) saturate(0.8) brightness(0.85)" }}
+          loading="lazy"
+          allowFullScreen
+          src="https://www.openstreetmap.org/export/embed.html?bbox=83.94,28.19,83.98,28.22&layer=mapnik&marker=28.2096,83.9585"
+        />
+      </div>
+
+      {/* Info panel */}
+      <div className="space-y-5">
+        <div className="rounded-xl border border-slate-800 p-5" style={{ background: "rgba(15,15,15,0.9)" }}>
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-2xl">📍</span>
+            <div>
+              <div className="text-amber-400 font-black text-sm uppercase tracking-widest">Address</div>
+              <div className="text-white text-base font-semibold">Lakeside, Pokhara 33700</div>
+              <div className="text-slate-500 text-sm">Bagmati Province, Nepal</div>
+            </div>
+          </div>
+          <div className="h-px bg-slate-800 mb-4" />
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              ["🕐", "Mon – Sat", "6:30 AM – 9:00 PM"],
+              ["🕐", "Sunday", "Closed (Rest Day)"],
+              ["📞", "Phone", "+977 61 000 000"],
+              ["✉️", "Email", "info@sakyantlakeside.com"],
+            ].map(([icon, label, val], i) => (
+              <div key={i} className="rounded-lg p-3" style={{ background: "rgba(255,255,255,0.03)" }}>
+                <div className="text-lg mb-1">{icon}</div>
+                <div className="text-xs text-slate-500 uppercase tracking-wide">{label}</div>
+                <div className="text-white text-xs font-semibold mt-0.5">{val}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Landmarks */}
+        <div className="rounded-xl border border-slate-800 p-5" style={{ background: "rgba(15,15,15,0.9)" }}>
+          <div className="text-amber-400 font-black text-xs uppercase tracking-widest mb-4">Nearby Landmarks</div>
+          <div className="space-y-3">
+            {[
+              { icon: "🌊", name: "Fewa Lake shore", dist: "2 min walk" },
+              { icon: "✈️", name: "Pokhara International Airport", dist: "15 min drive" },
+              { icon: "🏔️", name: "Annapurna viewpoint", dist: "25 min drive" },
+              { icon: "🛶", name: "Tal Barahi Temple boat dock", dist: "5 min walk" },
+            ].map((l, i) => (
+              <div key={i} className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2">
+                  <span>{l.icon}</span>
+                  <span className="text-slate-300">{l.name}</span>
+                </div>
+                <span className="text-xs text-amber-600 font-bold">{l.dist}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <a href="https://maps.google.com/?q=28.2096,83.9585" target="_blank" rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all hover:scale-[1.02]"
+          style={{ background: "linear-gradient(135deg,#8B0000,#C0392B)", color: "#fff" }}>
+          Open in Google Maps ↗
+        </a>
+      </div>
+    </div>
+  );
+};
+
+// ─── MEMBER FORM ─────────────────────────────────────────────────────────────
 
 const MemberForm = () => {
   const [form, setForm] = useState({ firstName:"",lastName:"",email:"",phone:"",dob:"",nationality:"",weightClass:"",experience:"",goal:"",photoPreview:null,emergencyName:"",emergencyPhone:"",medicalNotes:"" });
@@ -546,15 +912,15 @@ const MemberForm = () => {
                     </div>}
               </div>
               <div className="flex-1">
-                <div className="text-xs font-bold tracking-widest text-red-500 uppercase mb-1">Member Card</div>
-                <div className="text-xl font-black text-white">{memberCard.firstName} {memberCard.lastName}</div>
+                <div className="text-red-500 uppercase mb-1" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "0.7rem", letterSpacing: "0.25em", fontWeight: 700 }}>Member Card</div>
+                <div className="text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.4rem", fontWeight: 700 }}>{memberCard.firstName} {memberCard.lastName}</div>
                 <div className="text-amber-400 text-sm mt-1">{memberCard.weightClass || "Weight TBC"}</div>
                 <div className="text-slate-500 text-xs mt-1">{memberCard.nationality}</div>
               </div>
               <YantSymbol size={44} opacity={0.45} />
             </div>
             <div className="grid grid-cols-2 gap-3 mb-4">
-              {[["Member ID", memberCard.memberId],["Joined", memberCard.joinDate],["Experience", memberCard.experience || "—"],["Goal", memberCard.goal || "—"]].map(([l, v]) => (
+              {[["Member ID",memberCard.memberId],["Joined",memberCard.joinDate],["Experience",memberCard.experience||"—"],["Goal",memberCard.goal||"—"]].map(([l,v]) => (
                 <div key={l} className="rounded-lg p-3" style={{ background: "rgba(255,255,255,0.04)" }}>
                   <div className="text-xs text-slate-500 uppercase tracking-wide mb-1">{l}</div>
                   <div className="text-white text-sm font-semibold">{v}</div>
@@ -586,14 +952,11 @@ const MemberForm = () => {
       <div className="rounded-2xl overflow-hidden border border-slate-800" style={{ background: "rgba(10,10,10,0.88)" }}>
         <div className="h-1" style={{ background: "linear-gradient(90deg,#8B0000,#D4AF37)" }} />
         <div className="p-8">
-
-          {/* Section 1 */}
           <div className="mb-8">
-            <h3 className="text-amber-400 font-black text-xs uppercase tracking-widest mb-5 flex items-center gap-2">
+            <h3 className="text-amber-400 uppercase mb-5 flex items-center gap-2" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "0.78rem", letterSpacing: "0.22em", fontWeight: 700 }}>
               <span className="w-5 h-5 rounded-full bg-red-900/60 flex items-center justify-center text-xs text-amber-500">1</span>
               Personal Information
             </h3>
-            {/* Photo */}
             <div className="flex items-center gap-5 mb-6">
               <div className="w-20 h-20 rounded-xl border-2 border-dashed border-slate-700 overflow-hidden flex items-center justify-center cursor-pointer hover:border-amber-700/60 transition-colors"
                 style={{ background: "rgba(255,255,255,0.03)", flexShrink: 0 }}
@@ -624,10 +987,8 @@ const MemberForm = () => {
               <div><label className={lbl}>Nationality</label><input className={inp} style={inpStyle} placeholder="Nepali" value={form.nationality} onChange={e => set("nationality", e.target.value)} /></div>
             </div>
           </div>
-
-          {/* Section 2 */}
           <div className="mb-8">
-            <h3 className="text-amber-400 font-black text-xs uppercase tracking-widest mb-5 flex items-center gap-2">
+            <h3 className="text-amber-400 uppercase mb-5 flex items-center gap-2" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "0.78rem", letterSpacing: "0.22em", fontWeight: 700 }}>
               <span className="w-5 h-5 rounded-full bg-red-900/60 flex items-center justify-center text-xs text-amber-500">2</span>
               Fighting Profile
             </h3>
@@ -644,7 +1005,7 @@ const MemberForm = () => {
                 {EXPERIENCE.map(exp => (
                   <button key={exp} onClick={() => set("experience", exp)}
                     className="text-left px-4 py-3 rounded-lg border text-sm transition-all duration-200"
-                    style={{ border: form.experience === exp ? "1px solid #D4AF37" : "1px solid rgba(255,255,255,0.08)", background: form.experience === exp ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.03)", color: form.experience === exp ? "#D4AF37" : "#777" }}>
+                    style={{ border: form.experience===exp?"1px solid #D4AF37":"1px solid rgba(255,255,255,0.08)", background: form.experience===exp?"rgba(212,175,55,0.12)":"rgba(255,255,255,0.03)", color: form.experience===exp?"#D4AF37":"#777" }}>
                     {exp}
                   </button>
                 ))}
@@ -656,17 +1017,15 @@ const MemberForm = () => {
                 {GOALS.map(goal => (
                   <button key={goal} onClick={() => set("goal", goal)}
                     className="text-left px-4 py-3 rounded-lg border text-sm transition-all duration-200"
-                    style={{ border: form.goal === goal ? "1px solid #C0392B" : "1px solid rgba(255,255,255,0.08)", background: form.goal === goal ? "rgba(139,0,0,0.18)" : "rgba(255,255,255,0.03)", color: form.goal === goal ? "#F1948A" : "#777" }}>
+                    style={{ border: form.goal===goal?"1px solid #C0392B":"1px solid rgba(255,255,255,0.08)", background: form.goal===goal?"rgba(139,0,0,0.18)":"rgba(255,255,255,0.03)", color: form.goal===goal?"#F1948A":"#777" }}>
                     {goal}
                   </button>
                 ))}
               </div>
             </div>
           </div>
-
-          {/* Section 3 */}
           <div className="mb-8">
-            <h3 className="text-amber-400 font-black text-xs uppercase tracking-widest mb-5 flex items-center gap-2">
+            <h3 className="text-amber-400 uppercase mb-5 flex items-center gap-2" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "0.78rem", letterSpacing: "0.22em", fontWeight: 700 }}>
               <span className="w-5 h-5 rounded-full bg-red-900/60 flex items-center justify-center text-xs text-amber-500">3</span>
               Emergency & Medical
             </h3>
@@ -681,10 +1040,9 @@ const MemberForm = () => {
                 value={form.medicalNotes} onChange={e => set("medicalNotes", e.target.value)} />
             </div>
           </div>
-
           <button onClick={handleSubmit} disabled={!ready}
             className="w-full py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01]"
-            style={{ background: ready ? "linear-gradient(135deg,#8B0000,#C0392B)" : "#333", color: "#fff", letterSpacing: "0.15em" }}>
+            style={{ background: ready?"linear-gradient(135deg,#8B0000,#C0392B)":"#333", color: "#fff", letterSpacing: "0.15em" }}>
             Generate Member Card ↗
           </button>
           <p className="text-center text-slate-600 text-xs mt-3">* Required fields: First Name, Last Name, Email</p>
@@ -694,38 +1052,43 @@ const MemberForm = () => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// APP
-// ─────────────────────────────────────────────────────────────────────────────
-
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN APP LAYOUT
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── APP LAYOUT ───────────────────────────────────────────────────────────────
 
 function AppLayout() {
+  useEffect(() => {
+    if (!document.getElementById("gfonts-sakyant")) {
+      const link = document.createElement("link");
+      link.id = "gfonts-sakyant";
+      link.rel = "stylesheet";
+      link.href = FONT_LINK;
+      document.head.appendChild(link);
+    }
+  }, []);
   return (
-    <div className="min-h-screen text-white" style={{ background: "#0a0a0a", fontFamily: "'Georgia', serif" }}>
+    <div className="min-h-screen text-white" style={{ background: "#0a0a0a", fontFamily: "'DM Sans', sans-serif" }}>
       <BackgroundMosaic />
       <Navbar />
 
-      {/* ── HERO ──────────────────────────────────────────────────────────── */}
+      {/* HERO */}
       <section id="home" className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-28">
-        <div className="mb-8"><YantSymbol size={150} opacity={0.88} /></div>
+        {/* AI-style canvas art hero image */}
+        <div className="w-full max-w-2xl mb-10 px-4">
+          <HeroArtCanvas />
+          <p className="text-center text-slate-600 text-xs mt-2 tracking-widest">✦ SACRED INK · ANCIENT POWER · MODERN FIGHTER ✦</p>
+        </div>
         <div className="text-center max-w-4xl">
-          <p className="text-xs font-bold tracking-[0.4em] text-amber-500 uppercase mb-4">✦ Pokhara, Nepal · Lakeside · Est. 2015 ✦</p>
+          <p className="text-amber-500 uppercase mb-4" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "0.85rem", letterSpacing: "0.35em", fontWeight: 600 }}>✦ Pokhara, Nepal · Lakeside · Est. 2015 ✦</p>
           <h1 className="text-7xl md:text-9xl font-black uppercase leading-none mb-4"
-            style={{ fontFamily: "'Georgia', serif", background: "linear-gradient(135deg,#fff 0%,#D4AF37 50%,#C0392B 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            style={{ fontFamily: "'Bebas Neue', cursive", letterSpacing: "0.05em", background: "linear-gradient(135deg,#fff 0%,#D4AF37 50%,#C0392B 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             SAK YANT
           </h1>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-200 mb-2">LAKESIDE</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-200 mb-2" style={{ fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: "0.35em" }}>LAKESIDE</h2>
           <div className="flex items-center justify-center gap-3 mb-6">
             <div className="h-px w-16 bg-red-700" />
             <span className="text-amber-400 tracking-widest">MUAY THAI</span>
             <div className="h-px w-16 bg-red-700" />
           </div>
-          <p className="text-slate-300 text-xl mb-10 max-w-2xl mx-auto leading-relaxed italic">Where Sacred Ink Meets Savage Training</p>
-
-          {/* Quick stats */}
+          <p className="text-slate-300 text-xl mb-10 max-w-2xl mx-auto leading-relaxed italic" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.35rem" }}>Where Sacred Ink Meets Savage Training</p>
           <div className="grid grid-cols-4 gap-4 max-w-xl mx-auto mb-10">
             {[["2015","Founded"],["827m","Altitude"],["200+","Alumni"],["3×","Contender Champs"]].map(([v,l]) => (
               <div key={l} className="text-center p-3 rounded-xl border border-slate-800" style={{ background: "rgba(255,255,255,0.03)" }}>
@@ -734,11 +1097,12 @@ function AppLayout() {
               </div>
             ))}
           </div>
-
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button onClick={() => document.getElementById("register")?.scrollIntoView({ behavior: "smooth" })} className="px-8 py-4 font-bold text-sm tracking-widest uppercase rounded-lg transition-all hover:scale-105 text-center"
-              style={{ background: "linear-gradient(135deg,#8B0000,#C0392B)", color: "#fff" }}>Join the Gym</button>
-            <button onClick={() => document.getElementById("events")?.scrollIntoView({ behavior: "smooth" })} className="px-8 py-4 font-bold text-sm tracking-widest uppercase rounded-lg border border-amber-600/60 text-amber-400 hover:bg-amber-900/20 transition-all text-center">Upcoming Events</button>
+            <button onClick={() => document.getElementById("membership")?.scrollIntoView({ behavior: "smooth" })}
+              className="px-8 py-4 font-bold text-sm tracking-widest uppercase rounded-lg transition-all hover:scale-105 text-center"
+              style={{ background: "linear-gradient(135deg,#8B0000,#C0392B)", color: "#fff" }}>View Plans</button>
+            <button onClick={() => document.getElementById("events")?.scrollIntoView({ behavior: "smooth" })}
+              className="px-8 py-4 font-bold text-sm tracking-widest uppercase rounded-lg border border-amber-600/60 text-amber-400 hover:bg-amber-900/20 transition-all text-center">Upcoming Events</button>
           </div>
         </div>
         <div className="absolute bottom-10 flex flex-col items-center gap-2 animate-bounce">
@@ -747,24 +1111,22 @@ function AppLayout() {
         </div>
       </section>
 
-      {/* ── GYM FEATURES ──────────────────────────────────────────────────── */}
+      {/* GYM FEATURES */}
       <section id="gym" className="relative z-10 py-24 px-6">
         <div className="max-w-6xl mx-auto">
-          <SectionHeader label="The Gym" title="The Lakeside Advantage"
-            subtitle="Why athletes from across Nepal choose Fewa Lake over the city stadium." />
+          <SectionHeader label="The Gym" title="The Lakeside Advantage" subtitle="Why athletes from across Nepal choose Fewa Lake over the city stadium." />
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {[
-              { icon: "🏔️", title: "Altitude Training", desc: "827m elevation enhances VO₂ max and endurance naturally" },
-              { icon: "🌊", title: "Lake Recovery",     desc: "Cold Fewa Lake plunges accelerate muscle recovery" },
-              { icon: "🥊", title: "Authentic Thai Kru",desc: "Trainers with 15+ years fighting experience in Thailand" },
-              { icon: "🏯", title: "Sacred Culture",    desc: "Sak Yant blessing ceremonies for fighters before bouts" },
-              { icon: "👥", title: "Community",         desc: "A brotherhood of local and international athletes" },
-              { icon: "⚡", title: "Contender Ready",   desc: "Pipeline to The Contender Fight Series, Pokhara" },
-            ].map((f, i) => (
-              <div key={i} className="p-5 rounded-xl border border-slate-800 hover:border-red-800/50 transition-all"
-                style={{ background: "rgba(255,255,255,0.03)" }}>
+              { icon:"🏔️",title:"Altitude Training",desc:"827m elevation enhances VO₂ max and endurance naturally" },
+              { icon:"🌊",title:"Lake Recovery",desc:"Cold Fewa Lake plunges accelerate muscle recovery" },
+              { icon:"🥊",title:"Authentic Thai Kru",desc:"Trainers with 15+ years fighting experience in Thailand" },
+              { icon:"🏯",title:"Sacred Culture",desc:"Sak Yant blessing ceremonies for fighters before bouts" },
+              { icon:"👥",title:"Community",desc:"A brotherhood of local and international athletes" },
+              { icon:"⚡",title:"Contender Ready",desc:"Pipeline to The Contender Fight Series, Pokhara" },
+            ].map((f,i) => (
+              <div key={i} className="p-5 rounded-xl border border-slate-800 hover:border-red-800/50 transition-all" style={{ background: "rgba(255,255,255,0.03)" }}>
                 <div className="text-3xl mb-3">{f.icon}</div>
-                <h4 className="text-amber-400 font-bold text-xs tracking-widest uppercase mb-1">{f.title}</h4>
+                <h4 className="text-amber-400 uppercase mb-1" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "0.8rem", letterSpacing: "0.2em", fontWeight: 700 }}>{f.title}</h4>
                 <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
               </div>
             ))}
@@ -772,64 +1134,74 @@ function AppLayout() {
         </div>
       </section>
 
-      {/* ── GALLERY ───────────────────────────────────────────────────────── */}
+      {/* GALLERY */}
       <section id="gallery" className="relative z-10 py-24 px-6">
         <div className="max-w-6xl mx-auto">
-          <SectionHeader label="Gallery" title="Life at Sak Yant"
-            subtitle="20 moments — from the gym floor to the Himalayan skyline." />
+          <SectionHeader label="Gallery" title="Life at Sak Yant" subtitle="Moments from the gym floor to the Himalayan skyline." />
           <Gallery />
         </div>
       </section>
 
-      {/* ── ACHIEVEMENTS ──────────────────────────────────────────────────── */}
+      {/* ACHIEVEMENTS */}
       <section id="achievements" className="relative z-10 py-24 px-6">
         <div className="max-w-5xl mx-auto">
-          <SectionHeader label="Honours" title="Our Achievements"
-            subtitle="A history built fight by fight, ceremony by ceremony, summit by summit." />
+          <SectionHeader label="Honours" title="Our Achievements" subtitle="A history built fight by fight, ceremony by ceremony, summit by summit." />
           <Achievements />
         </div>
       </section>
 
-      {/* ── EVENTS ────────────────────────────────────────────────────────── */}
+      {/* EVENTS */}
       <section id="events" className="relative z-10 py-24 px-6">
         <div className="max-w-6xl mx-auto">
-          <SectionHeader label="Schedule" title="Events & Fights"
-            subtitle="Upcoming bouts, training camps, and ceremonies — stay in the loop." />
+          <SectionHeader label="Schedule" title="Events & Fights" subtitle="Upcoming bouts, training camps, and ceremonies." />
           <Events />
         </div>
       </section>
 
-      {/* ── SACRED INK FAQ ────────────────────────────────────────────────── */}
+      {/* MEMBERSHIP & SCHEDULE */}
+      <section id="membership" className="relative z-10 py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <SectionHeader label="Membership" title="Plans & Pricing" subtitle="Flexible options for every level — from drop-in visitors to competitive fighters." />
+          <MembershipSection />
+        </div>
+      </section>
+
+      {/* SACRED INK FAQ */}
       <section id="culture" className="relative z-10 py-24 px-6">
         <div className="max-w-3xl mx-auto">
-          <SectionHeader label="Sacred Ink" title="The Culture of Sak Yant"
-            subtitle="Ancient wisdom woven into every fighter's journey." />
+          <SectionHeader label="Sacred Ink" title="The Culture of Sak Yant" subtitle="Ancient wisdom woven into every fighter's journey." />
           <div className="flex justify-center mb-8"><YantSymbol size={80} opacity={0.75} /></div>
           {faqs.map((faq, i) => <AccordionItem key={i} faq={faq} />)}
         </div>
       </section>
 
-      {/* ── FIGHTER ROSTER ────────────────────────────────────────────────── */}
+      {/* FIGHTER ROSTER */}
       <section id="roster" className="relative z-10 py-24 px-6">
         <div className="max-w-6xl mx-auto">
-          <SectionHeader label="The Roster" title="Pokhara's Finest"
-            subtitle="Meet the warriors who carry Sak Yant's banner into every ring." />
+          <SectionHeader label="The Roster" title="Pokhara's Finest" subtitle="Meet the warriors who carry Sak Yant's banner into every ring." />
           <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
             {fighters.map((f, i) => <FighterCard key={i} fighter={f} />)}
           </div>
         </div>
       </section>
 
-      {/* ── MEMBER REGISTRATION ───────────────────────────────────────────── */}
+      {/* LOCATION */}
+      <section id="location" className="relative z-10 py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <SectionHeader label="Find Us" title="Lakeside, Pokhara" subtitle="On the western shore of Fewa Lake, beneath the Annapurna range." />
+          <LocationSection />
+        </div>
+      </section>
+
+      {/* MEMBER REGISTRATION */}
       <section id="register" className="relative z-10 py-24 px-6">
         <div className="max-w-6xl mx-auto">
-          <SectionHeader label="Join the Gym" title="Become a Member"
-            subtitle="Fill in your details below and generate your official Sak Yant Lakeside member card." />
+          <SectionHeader label="Join the Gym" title="Become a Member" subtitle="Fill in your details below and generate your official Sak Yant Lakeside member card." />
           <MemberForm />
         </div>
       </section>
 
-      {/* ── FOOTER ────────────────────────────────────────────────────────── */}
+      {/* FOOTER */}
       <footer className="relative z-10 border-t border-slate-800 py-12 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-10">
@@ -837,8 +1209,8 @@ function AppLayout() {
               <div className="flex items-center gap-3 mb-3">
                 <YantSymbol size={36} opacity={0.8} />
                 <div>
-                  <div className="text-xl font-black text-amber-400">SAK YANT LAKESIDE</div>
-                  <div className="text-slate-500 text-xs tracking-widest">MUAY THAI · POKHARA</div>
+                  <div className="text-amber-400 font-black" style={{ fontFamily: "'Bebas Neue', cursive", fontSize: "1.3rem", letterSpacing: "0.1em" }}>SAK YANT LAKESIDE</div>
+                  <div className="text-slate-500" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "0.7rem", letterSpacing: "0.25em" }}>MUAY THAI · POKHARA</div>
                 </div>
               </div>
               <p className="text-slate-500 text-sm max-w-xs leading-relaxed">Nepal's premier Muay Thai gym, nestled on the shores of Fewa Lake at 827m above sea level.</p>
@@ -861,7 +1233,7 @@ function AppLayout() {
             </div>
           </div>
           <div className="border-t border-slate-800/60 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="text-xs text-slate-700">© 2024 Sak Yant Muay Thai Lakeside · All rights reserved</div>
+            <div className="text-xs text-slate-700">© 2025 Sak Yant Muay Thai Lakeside · All rights reserved</div>
             <div className="flex items-center gap-6 text-xs text-slate-600">
               <span>Est. 2015</span><span>·</span><span>827m ASL</span><span>·</span><span>Pokhara, Nepal</span>
             </div>
